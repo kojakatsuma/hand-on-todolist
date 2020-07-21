@@ -1,16 +1,16 @@
 import React, { useState } from 'react'
 
 export const App = () => {
-  const [todos, setTodos] = useState([{}])
+  const [todoList, setTodoList] = useState([{}])
   return (
     <>
-      {todos.map((todo, i) => (
+      {todoList.map((todo, i) => (
         <div key={i}>{todo.name} </div>
       ))}
       <button
         onClick={() => {
-          todos.push({ name: 'task' })
-          setTodos(todos)
+          todoList.push({ name: '掃除' })
+          setTodoList(todoList)
         }}
       >
         Add
