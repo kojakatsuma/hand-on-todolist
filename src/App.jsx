@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 export const App = () => {
-  const [todoList, setTodoList] = useState([{}])
+  const [todoList, setTodoList] = useState([{ name: '料理' }])
   return (
     <>
       {todoList.map((todo, i) => (
