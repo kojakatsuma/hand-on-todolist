@@ -6,7 +6,7 @@ export const App = () => {
 }
 
 const Number = (props) => {
-  // props.num += // NG
+  // props.num += 1 // NG
   const changedNum = props.num + 1
   return <div>{changedNum}</div>
 }

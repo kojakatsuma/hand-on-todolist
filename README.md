@@ -15,4 +15,5 @@ npm ci
 ```
 npm start
 ```
-http://localhost:3000/　でアクセスできます。
+以下のURLにアクセスする
+http://localhost:3000/
