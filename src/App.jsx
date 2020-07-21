@@ -4,14 +4,11 @@ export const App = () => {
   const nameList = ['太郎', 'ハナコ', '二郎']
   return (
     <div>
-      <span>exmple</span>
+      {nameList.map((name) => (
+        <div>{name}</div>
+      ))}
     </div>
   )
-}
-
-const Name = (props) => {
-  const name = props.name
-  return <div>{name}</div>
 }
 
 const TopHeader = () => {
