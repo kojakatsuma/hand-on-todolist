@@ -2,11 +2,11 @@ import React from 'react'
 
 export const App = () => {
   const numberList = [1, 2, 3]
-  return numberList.map((num, i) => <Number key={i} num={num} />)
+  return numberList.map((number, i) => <Number key={i} number={number} />)
 }
 
 const Number = (props) => {
-  // props.num += 1 // NG
-  const changedNum = props.num + 1
+  // props.number += 1 // NG
+  const changedNum = props.number + 1
   return <div>{changedNum}</div>
 }
