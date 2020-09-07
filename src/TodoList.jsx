@@ -1,33 +1,104 @@
 import React, { useState } from 'react'
+import { useEffect } from 'react'
 import { Todo } from './Todo'
 import { TodoForm } from './TodoForm'
 
-export const TodoList = () => {
-  const todosMock = [
-    { name: '掃除', dueDate: new Date('2021-07-14T00:00:00') },
-    { name: '皿洗い', dueDate: new Date('2020-07-13T00:00:00') },
-    { name: '犬を洗う', dueDate: new Date('2020-07-15T00:00:00') },
-  ]
-  const [todos, setTodos] = useState(todosMock)
+const getTodos = async () => {
+  return fetch('http://localhost:4000/todo')
+    .then((res) => res.json())
+    .then((todos) =>
+      todos.map((todo) => ({ ...todo, dueDate: new Date(todo.dueDate) })),
+    )
+}
 
-  const createTodo = (name, dueDate) => {
-    setTodos(todos.concat({ name, dueDate: new Date(dueDate) }))
+const postTodo = async (name, dueDate) => {
+  return fetch('http://localhost:4000/todo', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ name, dueDate }),
+  }).then((res) => {
+    if (res.status !== 200) {
+      throw new Error('failed create Todo')
+    }
+  })
+}
+
+const deleteTodoById = async (id) => {
+  return fetch(`http://localhost:4000/todo/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }).then((res) => {
+    if (res.status !== 200) {
+      throw new Error('failed create Todo')
+    }
+  })
+}
+
+const updateTodo = async (todo, checked) => {
+  return fetch(`http://localhost:4000/todo/${todo.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ ...todo, checked }),
+  }).then((res) => {
+    if (res.status !== 200) {
+      throw new Error('failed create Todo')
+    }
+  })
+}
+
+export const TodoList = () => {
+  const [todos, setTodos] = useState([])
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    setLoading(true)
+    getTodos().then((todos) => {
+      setTodos(todos)
+      setLoading(false)
+    })
+  }, [])
+
+  const createTodo = async (name, dueDate) => {
+    setLoading(true)
+    await postTodo(name, dueDate)
+    const todos = await getTodos()
+    setTodos(todos)
+    setLoading(false)
   }
 
-  const deleteTodo = (deleteIndex) => {
-    setTodos(todos.filter((_todo, i) => i !== deleteIndex))
+  const deleteTodo = async (todoId) => {
+    setLoading(true)
+    await deleteTodoById(todoId)
+    const todos = await getTodos()
+    setTodos(todos)
+    setLoading(false)
+  }
+
+  const changeTodo = (todo) => async (checked) => {
+    setLoading(true)
+    await updateTodo(todo, checked)
+    setTodos(await getTodos())
+    setLoading(false)
   }
 
   return (
     <>
       <h2>TODO一覧</h2>
-      {todos.map((todo, index) => (
-        <div key={index}>
-          <Todo name={todo.name} dueDate={todo.dueDate} />
-          <button onClick={() => deleteTodo(index)}>削除</button>
-        </div>
-      ))}
-      <TodoForm createTodo={createTodo} />
+      <div style={{ opacity: loading ? 0.5 : 1 }}>
+        {todos.map((todo, index) => (
+          <div key={index}>
+            <Todo  checked={todo.checked} name={todo.name} dueDate={todo.dueDate} onChange={changeTodo(todo)} />
+            <button onClick={() => deleteTodo(todo.id)}>削除</button>
+          </div>
+        ))}
+        <TodoForm createTodo={createTodo} />
+      </div>
     </>
   )
 }
