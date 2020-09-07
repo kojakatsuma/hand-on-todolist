@@ -11,15 +11,10 @@ export const TodoList = () => {
   const [todos, setTodos] = useState(todosMock)
 
   const createTodo = (name, dueDate) => {
-    const startTime = Date.now()
-
-    while (true) {
-      const diffTime = Date.now() - startTime
-      if (diffTime >= 10000) {
-        break // 指定時間経過したら関数の実行を終了
-      }
-    }
-    setTodos(todos.concat({ name, dueDate: new Date(dueDate) }))
+    setTimeout(
+      () => setTodos(todos.concat({ name, dueDate: new Date(dueDate) })),
+      5000,
+    )
   }
 
   const deleteTodo = (deleteIndex) => {
