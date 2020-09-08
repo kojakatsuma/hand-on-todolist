@@ -1,21 +1,53 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Todo } from './Todo'
 import { TodoForm } from './TodoForm'
 
-export const TodoList = () => {
-  const todosMock = [
-    { name: '掃除', dueDate: new Date('2021-07-14T00:00:00') },
-    { name: '皿洗い', dueDate: new Date('2020-07-13T00:00:00') },
-    { name: '犬を洗う', dueDate: new Date('2020-07-15T00:00:00') },
-  ]
-  const [todos, setTodos] = useState(todosMock)
+const fetchAllTodos = async () => {
+  const todos = await fetch('http://localhost:4000/todo').then((response) =>
+    response.json(),
+  )
+  return todos.map((todo) => ({ ...todo, dueDate: new Date(todo.dueDate) }))
+}
 
-  const createTodo = (name, dueDate) => {
-    setTodos(todos.concat({ name, dueDate: new Date(dueDate) }))
+export const TodoList = () => {
+  const [todos, setTodos] = useState([])
+
+  useEffect(() => {
+    fetchAllTodos().then((todos) => setTodos(todos))
+  }, [])
+
+  const createTodo = async (name, dueDate) => {
+    const response = await fetch('http://localhost:4000/todo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, dueDate, checked: false }),
+    })
+    if (response.ok) {
+      const todos = await fetchAllTodos()
+      setTodos(todos)
+    }
   }
 
-  const deleteTodo = (deleteIndex) => {
-    setTodos(todos.filter((_todo, i) => i !== deleteIndex))
+  const deleteTodo = async (id) => {
+    const response = await fetch(`http://localhost:4000/todo/${id}`, {
+      method: 'DELETE',
+    })
+    if (response.ok) {
+      const todos = await fetchAllTodos()
+      setTodos(todos)
+    }
+  }
+
+  const updateTodo = (todo) => async (checked) => {
+    const response = await fetch(`http://localhost:4000/todo/${todo.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...todo, checked }),
+    })
+    if (response.ok) {
+      const todos = await fetchAllTodos()
+      setTodos(todos)
+    }
   }
 
   return (
@@ -23,8 +55,13 @@ export const TodoList = () => {
       <h2>TODO一覧</h2>
       {todos.map((todo, index) => (
         <div key={index}>
-          <Todo name={todo.name} dueDate={todo.dueDate} />
-          <button onClick={() => deleteTodo(index)}>削除</button>
+          <Todo
+            name={todo.name}
+            dueDate={todo.dueDate}
+            checked={todo.checked}
+            onChange={updateTodo(todo)}
+          />
+          <button onClick={() => deleteTodo(todo.id)}>削除</button>
         </div>
       ))}
       <TodoForm createTodo={createTodo} />

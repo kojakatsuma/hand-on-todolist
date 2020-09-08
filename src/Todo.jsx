@@ -1,14 +1,18 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 export const Todo = (props) => {
-  const [isCheck, check] = useState(false)
-  const { name, dueDate } = props
+  const { name, dueDate, checked, onChange } = props
   const expired = Date.now() > dueDate.getTime()
   return (
     <div style={expired ? { color: 'red' } : null}>
-      <input type="checkbox" id={name} onChange={(e) => check(e.target.checked)}/>
+      <input
+        checked={checked}
+        type="checkbox"
+        id={name}
+        onChange={(e) => onChange(e.target.checked)}
+      />
       <label htmlFor={name}>
-        <span style={isCheck ? { textDecorationLine: 'line-through' } : null}>
+        <span style={checked ? { textDecorationLine: 'line-through' } : null}>
           {name} {dueDate.toLocaleString()}
         </span>
       </label>
