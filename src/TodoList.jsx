@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Todo } from './Todo'
 import { TodoForm } from './TodoForm'
 
 export const TodoList = () => {
   const [todos, setTodos] = useState([])
 
-  // fetch('http://localhost:4000/todo')
-  //   .then((res) => res.json())
-  //   .then((todos) =>
-  //     todos.map((todo) => ({ ...todo, dueDate: new Date(todo.dueDate) })),
-  //   )
-  //   .then((todos) => setTodos(todos))
+  fetch('http://localhost:4000/todo')
+    .then((res) => res.json())
+    .then((todos) =>
+      todos.map((todo) => ({ ...todo, dueDate: new Date(todo.dueDate) })),
+    )
+    .then((todos) => setTodos(todos))
 
-  useEffect(() => {
-    fetch('http://localhost:4000/todo')
-      .then((res) => res.json())
-      .then((todos) =>
-        todos.map((todo) => ({ ...todo, dueDate: new Date(todo.dueDate) })),
-      )
-      .then((todos) => setTodos(todos))
-  }, [])
+  // useEffect(() => {
+  //   fetch('http://localhost:4000/todo')
+  //     .then((res) => res.json())
+  //     .then((todos) =>
+  //       todos.map((todo) => ({ ...todo, dueDate: new Date(todo.dueDate) })),
+  //     )
+  //     .then((todos) => setTodos(todos))
+  // }, [])
 
   const createTodo = (name, dueDate) => {
     setTodos(todos.concat({ name, dueDate: new Date(dueDate) }))
